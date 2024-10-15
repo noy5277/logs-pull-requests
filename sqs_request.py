@@ -29,21 +29,21 @@ def trigger_lambda_sqs_message():
             changed_files = ''
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
-                changed_files = response.json(filename)
+                changed_files = response.json(response)
             
-            # changed_files = json.load(changed_files)
-            # for file in changed_files:
-            #     files.update({f'{file.get("filename",{})}': f'{file.get("status",{})}'})
-            # message = {
-            #     "repository_name" : f'https://github.com/{github_repo}',
-            #     "changed_files" : files
-            # }
-            # message_json = json.dumps(message, indent=4)
+            changed_files = json.load(changed_files)
+            for file in changed_files:
+                files.update({f'{file.get("filename",{})}': f'{file.get("status",{})}'})
+            message = {
+                "repository_name" : f'https://github.com/{github_repo}',
+                "changed_files" : files
+            }
+            message_json = json.dumps(message, indent=4)
             sqs = session.client('sqs',region_name='us-west-2')
             queue_url = 'https://sqs.us-west-2.amazonaws.com/622395351311/pr-trigger'
             sqs_response = sqs.send_message(
                 QueueUrl=queue_url,
-                MessageBody=changed_files,
+                MessageBody=message_json,
                 DelaySeconds=5
             )
             print(f"Message ID: {sqs_response['MessageId']}")
