@@ -19,6 +19,7 @@ jobs:
           AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
           GITHUB_TOKEN: ${{ secrets.CP_GITHUB_TOKEN }}
         run: |
+          env
           sudo apt-get install python3-pip
           pip3 install -r requirements.txt
           python3 sqs_request.py
