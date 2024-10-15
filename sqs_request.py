@@ -19,7 +19,7 @@ github_repo = os.getenv("GITHUB_REPOSITORY")
 def trigger_lambda_sqs_message():
     try:
         print(f"Logging pull request number:{pr_number}")
-        if pr_number == "":
+        if pr_number is not None:
             url = f'https://api.github.com/repos/{github_repo}/pulls/{pr_number}/files'
             headers = {
                 'Authorization': f'token {github_token}',
