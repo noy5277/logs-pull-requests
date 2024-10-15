@@ -61,5 +61,4 @@ def trigger_lambda_sqs_message():
         print(f"An error occurred: {e}")
         sys.exit(1)
 
-
 trigger_lambda_sqs_message()
