@@ -19,6 +19,7 @@ github_repo = os.getenv("GITHUB_REPOSITORY")
 def trigger_lambda_sqs_message():
     try:
         print(f"Logging pull request number:{pr_number}")
+        print(f"Logging pull request number:{github_repo}")
         url = f'https://api.github.com/repos/{github_repo}/pulls/{pr_number}/files'
         headers = {
             'Authorization': f'token {github_token}',
@@ -31,7 +32,9 @@ def trigger_lambda_sqs_message():
         
         files = {}
         for file in changed_files:
+            print(file)
             files.update({ f'{file["filename"]}': f'{file["status"]}' })
+            print(files)
         message = {
             "repository_name" : f'https://github.com/{github_repo}',
             "changed_files" : files
