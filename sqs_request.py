@@ -41,7 +41,7 @@ def trigger_lambda_sqs_message():
         queue_url = 'https://sqs.us-west-2.amazonaws.com/622395351311/pr-trigger'
         sqs_response = sqs.send_message(
             QueueUrl=queue_url,
-            MessageBody=message_json,
+            MessageBody=changed_files,
             DelaySeconds=5
         )
         print(f"Message ID: {sqs_response['MessageId']}")
