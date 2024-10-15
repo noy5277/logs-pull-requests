@@ -29,7 +29,7 @@ def trigger_lambda_sqs_message():
             changed_files = ''
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
-                changed_files = response.json(response)
+                changed_files = response.json()
             
             changed_files = json.load(changed_files)
             for file in changed_files:
