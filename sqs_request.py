@@ -28,11 +28,14 @@ def trigger_lambda_sqs_message():
             changed_files = ''
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
-                changed_files = response.json()
-
+                changed_files = response.json(filename)
+            
+            files = {}
+            for file in changed_files:
+                files.update({ f'{file["filename"]}': f'{file["status"]}' })
             message = {
                 "repository_name" : f'https://github.com/{github_repo}',
-                "changed_files" : changed_files
+                "changed_files" : files
             }
             message_json = json.dumps(message, indent=4)
             sqs = session.client('sqs',region_name='us-west-2')
