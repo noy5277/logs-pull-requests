@@ -18,36 +18,35 @@ github_repo = os.getenv("GITHUB_REPOSITORY")
 
 def trigger_lambda_sqs_message():
     try:
-        print(f"Logging pull request number:{pr_number}")
-        print(f"Logging pull request number:{github_repo}")
-        url = f'https://api.github.com/repos/{github_repo}/pulls/{pr_number}/files'
-        headers = {
-            'Authorization': f'token {github_token}',
-            'Accept': 'application/vnd.github.v3+json',
-        }
-        changed_files = ''
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            changed_files = response.json(filename)
-        
-        files = {}
-        for file in changed_files:
-            print(file)
-            files.update({ f'{file["filename"]}': f'{file["status"]}' })
-            print(files)
-        message = {
-            "repository_name" : f'https://github.com/{github_repo}',
-            "changed_files" : files
-        }
-        message_json = json.dumps(message, indent=4)
-        sqs = session.client('sqs',region_name='us-west-2')
-        queue_url = 'https://sqs.us-west-2.amazonaws.com/622395351311/pr-trigger'
-        sqs_response = sqs.send_message(
-            QueueUrl=queue_url,
-            MessageBody=changed_files,
-            DelaySeconds=5
-        )
-        print(f"Message ID: {sqs_response['MessageId']}")
+        if pr_number is not None:
+            print(f"Logging pull request number: {pr_number}")
+            print(f"Logging pull request number: {github_repo}")
+            url = f'https://api.github.com/repos/{github_repo}/pulls/{pr_number}/files'
+            headers = {
+                'Authorization': f'token {github_token}',
+                'Accept': 'application/vnd.github.v3+json',
+            }
+            changed_files = ''
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                changed_files = response.json(filename)
+            
+            changed_files = json.load(changed_files)
+            for file in changed_files:
+                files.update({f'{file.get("filename",{})}': f'{file.get("status",{})}'})
+            message = {
+                "repository_name" : f'https://github.com/{github_repo}',
+                "changed_files" : files
+            }
+            message_json = json.dumps(message, indent=4)
+            sqs = session.client('sqs',region_name='us-west-2')
+            queue_url = 'https://sqs.us-west-2.amazonaws.com/622395351311/pr-trigger'
+            sqs_response = sqs.send_message(
+                QueueUrl=queue_url,
+                MessageBody=message_json,
+                DelaySeconds=5
+            )
+            print(f"Message ID: {sqs_response['MessageId']}")
         # else:
         #     print("No new pull request created")
     except requests.exceptions.HTTPError as http_err:
