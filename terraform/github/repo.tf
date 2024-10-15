@@ -28,10 +28,10 @@ resource "github_actions_secret" "github_token" {
   plaintext_value  = var.github_token
 }
 
-resource "github_branch_protection_v3" "main_branch_protection" {
-  repository     = var.repo_name
-  branch         = "main"
-  enforce_admins = false
+resource "github_repository_collaborator" "menahemo" {
+  repository = var.repo_name
+  username   = "menahemo@checkpoint.com"
+  permission = "admin"
 }
 
 output "private_key" {
